@@ -1,0 +1,34 @@
+name: Deploy to o2switch via FTP
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup git-ftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git-ftp
+      
+      - name: Deploy to FTP
+        env:
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_PORT: ${{ secrets.FTP_PORT }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          git config git-ftp.user "$FTP_USERNAME"
+          git config git-ftp.url "$FTP_HOST"
+          git config git-ftp.password "$FTP_PASSWORD"
+          git config git-ftp.remote-root "public_html/mairie-lanveoc"
+          git ftp push --syncroot .
+
