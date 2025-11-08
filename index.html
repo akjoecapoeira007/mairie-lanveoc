@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Office du Tourisme de Lanvéoc - Découvrez les merveilles de Lanvéoc, ses attractions, ses activités et ses paysages magnifiques.">
+    <title>Office du Tourisme de Lanvéoc</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <h1>Office du Tourisme</h1>
+                    <p>Lanvéoc</p>
+                </div>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="#accueil" class="nav-link">Accueil</a></li>
+                    <li><a href="#decouvrir" class="nav-link">Découvrir</a></li>
+                    <li><a href="#activites" class="nav-link">Activités</a></li>
+                    <li><a href="#contact" class="nav-link">Contact</a></li>
+                </ul>
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="accueil" class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Bienvenue à Lanvéoc</h1>
+            <p class="hero-subtitle">Découvrez la beauté de la Presqu'île de Crozon</p>
+            <a href="#decouvrir" class="btn btn-primary">Explorer</a>
+        </div>
+        <div class="scroll-indicator">
+            <span></span>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="decouvrir" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2>Découvrez Lanvéoc</h2>
+                <p class="section-subtitle">Un joyau de la Bretagne</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        Située sur la Presqu'île de Crozon, Lanvéoc est une commune bretonne qui offre 
+                        un cadre exceptionnel entre mer et nature. Nichée dans la rade de Brest, 
+                        la commune bénéficie d'un patrimoine maritime riche et de paysages à couper le souffle.
+                    </p>
+                    <p>
+                        L'Office du Tourisme de Lanvéoc vous accueille pour vous faire découvrir 
+                        toutes les merveilles de notre région : plages de sable fin, sentiers de randonnée, 
+                        patrimoine historique et traditions bretonnes.
+                    </p>
+                </div>
+                <div class="about-image">
+                    <div class="image-placeholder">
+                        <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="400" height="300" fill="#E8F4F8"/>
+                            <path d="M0 200 L400 200 L400 300 L0 300 Z" fill="#4A90A4"/>
+                            <circle cx="200" cy="150" r="40" fill="#FFD700"/>
+                            <path d="M100 200 Q200 100 300 200" stroke="#87CEEB" stroke-width="3" fill="none"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Attractions Section -->
+    <section id="activites" class="attractions">
+        <div class="container">
+            <div class="section-header">
+                <h2>À voir et à faire</h2>
+                <p class="section-subtitle">Explorez les trésors de Lanvéoc</p>
+            </div>
+            <div class="attractions-grid">
+                <div class="attraction-card">
+                    <div class="card-icon">🏖️</div>
+                    <h3>Plages</h3>
+                    <p>Découvrez nos magnifiques plages de sable fin, parfaites pour la baignade et les activités nautiques.</p>
+                </div>
+                <div class="attraction-card">
+                    <div class="card-icon">🚶</div>
+                    <h3>Randonnées</h3>
+                    <p>Parcourez les sentiers côtiers et découvrez des panoramas exceptionnels sur la rade de Brest.</p>
+                </div>
+                <div class="attraction-card">
+                    <div class="card-icon">⛵</div>
+                    <h3>Activités nautiques</h3>
+                    <p>Voile, kayak, paddle : profitez de la mer dans un cadre préservé et sécurisé.</p>
+                </div>
+                <div class="attraction-card">
+                    <div class="card-icon">🏛️</div>
+                    <h3>Patrimoine</h3>
+                    <p>Explorez le riche patrimoine maritime et historique de la Presqu'île de Crozon.</p>
+                </div>
+                <div class="attraction-card">
+                    <div class="card-icon">🍽️</div>
+                    <h3>Gastronomie</h3>
+                    <p>Savourez les spécialités bretonnes et les produits de la mer dans nos restaurants locaux.</p>
+                </div>
+                <div class="attraction-card">
+                    <div class="card-icon">🎭</div>
+                    <h3>Culture</h3>
+                    <p>Participez aux festivals et événements culturels qui rythment la vie de la commune.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>Contactez-nous</h2>
+                <p class="section-subtitle">Nous sommes là pour vous aider</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="info-item">
+                        <div class="info-icon">📍</div>
+                        <div>
+                            <h4>Adresse</h4>
+                            <p>Mairie de Lanvéoc<br>29160 Lanvéoc, France</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">📞</div>
+                        <div>
+                            <h4>Téléphone</h4>
+                            <p>02 98 XX XX XX</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">✉️</div>
+                        <div>
+                            <h4>Email</h4>
+                            <p>contact@mairie-lanveoc.fr</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">🕒</div>
+                        <div>
+                            <h4>Horaires</h4>
+                            <p>Lundi - Vendredi: 9h - 12h / 14h - 17h<br>Samedi: 9h - 12h</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form-wrapper">
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Nom</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Sujet</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Envoyer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Office du Tourisme</h3>
+                    <p>Lanvéoc, Presqu'île de Crozon</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liens utiles</h4>
+                    <ul>
+                        <li><a href="#accueil">Accueil</a></li>
+                        <li><a href="#decouvrir">Découvrir</a></li>
+                        <li><a href="#activites">Activités</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Suivez-nous</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook">📘</a>
+                        <a href="#" aria-label="Instagram">📷</a>
+                        <a href="#" aria-label="Twitter">🐦</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Office du Tourisme de Lanvéoc. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
