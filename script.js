@@ -135,7 +135,8 @@ document.head.appendChild(style);
 // GPT Search functionality
 // API configuration is loaded from config.js (not in git)
 let OPENAI_API_KEY = '';
-let GPT_MODEL = 'gpt-4-turbo-preview'; // Fallback to standard model
+let GPT_MODEL = 'gpt-5'; // Fallback to gpt-5
+let SYSTEM_MESSAGE = 'Tu es Guide France, un conseiller touristique virtuel pour toutes les régions de France. Tu aides les utilisateurs à découvrir les spécialités locales, les activités, et les meilleurs endroits où manger, dormir, ou visiter.';
 let USE_ASSISTANT_API = false;
 let ASSISTANT_ID = '';
 let GPT_API_URL = 'https://api.openai.com/v1/chat/completions';
@@ -144,6 +145,7 @@ let GPT_API_URL = 'https://api.openai.com/v1/chat/completions';
 if (typeof GPT_CONFIG !== 'undefined') {
     OPENAI_API_KEY = GPT_CONFIG.OPENAI_API_KEY || '';
     GPT_MODEL = GPT_CONFIG.GPT_MODEL || GPT_MODEL;
+    SYSTEM_MESSAGE = GPT_CONFIG.SYSTEM_MESSAGE || SYSTEM_MESSAGE;
     USE_ASSISTANT_API = GPT_CONFIG.USE_ASSISTANT_API || false;
     ASSISTANT_ID = GPT_CONFIG.ASSISTANT_ID || '';
 }
@@ -284,7 +286,7 @@ async function searchGPT(query) {
             displayResult(content);
             return;
         } else {
-            // Utiliser l'API Chat Completions standard
+            // Utiliser l'API Chat Completions standard avec message système
             response = await fetch(GPT_API_URL, {
                 method: 'POST',
                 headers: {
@@ -294,6 +296,10 @@ async function searchGPT(query) {
                 body: JSON.stringify({
                     model: GPT_MODEL,
                     messages: [
+                        {
+                            role: 'system',
+                            content: SYSTEM_MESSAGE
+                        },
                         {
                             role: 'user',
                             content: query
