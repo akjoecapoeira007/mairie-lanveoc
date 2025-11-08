@@ -61,6 +61,8 @@ git ftp push
 - `index.html` - Page principale du site
 - `styles.css` - Feuille de style CSS
 - `script.js` - JavaScript pour l'interactivité
+- `api/gpt.php` - Endpoint PHP backend pour l'API GPT (sécurisé)
+- `api/config.php` - Configuration API (non versionné, déployé séparément)
 - `.github/workflows/deploy.yml` - Workflow GitHub Actions pour le déploiement automatique
 
 ## 🎨 Caractéristiques
