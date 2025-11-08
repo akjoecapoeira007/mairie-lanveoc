@@ -7,6 +7,16 @@
 
 return [
     'OPENAI_API_KEY' => 'votre-cle-api-ici',
+    
+    // Google Custom Search API pour les images (gratuit jusqu'à 100 requêtes/jour)
+    // Obtenez votre clé sur: https://developers.google.com/custom-search/v1/overview
+    // Créez un Custom Search Engine sur: https://cse.google.com/cse/
+    // Dans les paramètres du CSE, activez "Search the entire web" et "Image search"
+    'GOOGLE_API_KEY' => '', // Votre clé API Google
+    'GOOGLE_CSE_ID' => '', // Votre Custom Search Engine ID
+    
+    // Pexels API (alternative, gratuite)
+    'PEXELS_API_KEY' => '', // Votre clé Pexels (optionnel)
     // Modèles disponibles (du moins cher au plus cher):
     // 'gpt-4o-mini' - Le moins cher (~$0.15/$0.60 par 1M tokens), très rapide (recommandé)
     // 'gpt-3.5-turbo' - Économique (~$0.50/$1.50 par 1M tokens), rapide

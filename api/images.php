@@ -31,12 +31,70 @@ if (empty($query)) {
     exit;
 }
 
-// Utiliser plusieurs sources d'images avec fallback
+// Utiliser Google Custom Search API pour rechercher des images
+// Configuration: Ajoutez GOOGLE_API_KEY et GOOGLE_CSE_ID dans config.php
+$configFile = __DIR__ . '/config.php';
+$googleApiKey = '';
+$googleCseId = '';
+
+if (file_exists($configFile)) {
+    $config = require $configFile;
+    $googleApiKey = $config['GOOGLE_API_KEY'] ?? '';
+    $googleCseId = $config['GOOGLE_CSE_ID'] ?? '';
+}
+
 $searchQuery = urlencode($query . ' France');
+
+// Essayer Google Custom Search API d'abord
+if (!empty($googleApiKey) && !empty($googleCseId)) {
+    $googleUrl = 'https://www.googleapis.com/customsearch/v1?key=' . $googleApiKey . 
+                 '&cx=' . $googleCseId . 
+                 '&q=' . $searchQuery . 
+                 '&searchType=image&num=1&safe=active';
+    
+    $ch = curl_init($googleUrl);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 5,
+        CURLOPT_CONNECTTIMEOUT => 3
+    ]);
+    $googleResponse = curl_exec($ch);
+    $googleHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($googleHttpCode === 200) {
+        $googleData = json_decode($googleResponse, true);
+        if (isset($googleData['items'][0]['link'])) {
+            $imageUrl = $googleData['items'][0]['link'];
+            // Vérifier que l'URL de l'image est accessible
+            $imgCheck = curl_init($imageUrl);
+            curl_setopt_array($imgCheck, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_NOBODY => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_TIMEOUT => 3,
+                CURLOPT_CONNECTTIMEOUT => 2
+            ]);
+            curl_exec($imgCheck);
+            $imgHttpCode = curl_getinfo($imgCheck, CURLINFO_HTTP_CODE);
+            curl_close($imgCheck);
+            
+            if ($imgHttpCode === 200) {
+                echo json_encode([
+                    'success' => true,
+                    'imageUrl' => $imageUrl,
+                    'query' => $query,
+                    'source' => 'google'
+                ]);
+                exit;
+            }
+        }
+    }
+}
 
 // Option: Utiliser Pexels API (gratuite, nécessite une clé API)
 // Pour activer, ajoutez PEXELS_API_KEY dans config.php
-$pexelsApiKey = ''; // Vous pouvez ajouter votre clé Pexels ici
+$pexelsApiKey = $config['PEXELS_API_KEY'] ?? '';
 if (!empty($pexelsApiKey)) {
     $pexelsUrl = 'https://api.pexels.com/v1/search?query=' . $searchQuery . '&per_page=1&orientation=landscape';
     $ch = curl_init($pexelsUrl);
