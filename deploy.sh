@@ -19,7 +19,7 @@ fi
 git config git-ftp.user "$FTP_USERNAME"
 git config git-ftp.url "$FTP_HOST"
 git config git-ftp.password "$FTP_PASSWORD"
-git config git-ftp.remote-root "public_html/mairie-lanveoc"
+git config git-ftp.remote-root "/"
 
 # Deploy
 echo "Deploying to FTP..."
