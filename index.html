@@ -6,6 +6,7 @@
     <meta name="description" content="Office du Tourisme de Lanvéoc - Découvrez les merveilles de Lanvéoc, ses attractions, ses activités et ses paysages magnifiques.">
     <title>Office du Tourisme de Lanvéoc</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -22,6 +23,7 @@
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="#accueil" class="nav-link">Accueil</a></li>
                     <li><a href="#decouvrir" class="nav-link">Découvrir</a></li>
+                    <li><a href="#guide" class="nav-link">Guide IA</a></li>
                     <li><a href="#activites" class="nav-link">Activités</a></li>
                     <li><a href="#contact" class="nav-link">Contact</a></li>
                 </ul>
@@ -77,6 +79,34 @@
                         </svg>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GPT Guide Section -->
+    <section id="guide" class="gpt-guide">
+        <div class="container">
+            <div class="section-header">
+                <h2>Guide Touristique IA</h2>
+                <p class="section-subtitle">Posez vos questions sur les destinations françaises</p>
+            </div>
+            <div class="gpt-search-container">
+                <div class="gpt-search-box">
+                    <div class="search-input-wrapper">
+                        <input 
+                            type="text" 
+                            id="gptSearchInput" 
+                            class="gpt-search-input" 
+                            placeholder="Ex: Que visiter autour de Marseille ?"
+                            autocomplete="off"
+                        />
+                        <button id="gptSearchBtn" class="gpt-search-btn">
+                            <span class="search-icon">🔍</span>
+                            <span class="loading-spinner" style="display: none;">⏳</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="gptResults" class="gpt-results"></div>
             </div>
         </div>
     </section>

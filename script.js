@@ -132,3 +132,119 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// GPT Search functionality
+// API configuration is loaded from config.js (not in git)
+let OPENAI_API_KEY = '';
+let GPT_MODEL = 'gpt-5-custom-id-de-guide-france';
+let GPT_API_URL = 'https://api.openai.com/v1/chat/completions';
+
+// Load config if available
+if (typeof GPT_CONFIG !== 'undefined') {
+    OPENAI_API_KEY = GPT_CONFIG.OPENAI_API_KEY || '';
+    GPT_MODEL = GPT_CONFIG.GPT_MODEL || GPT_MODEL;
+}
+
+const gptSearchInput = document.getElementById('gptSearchInput');
+const gptSearchBtn = document.getElementById('gptSearchBtn');
+const gptResults = document.getElementById('gptResults');
+
+function showLoading() {
+    const searchIcon = gptSearchBtn.querySelector('.search-icon');
+    const loadingSpinner = gptSearchBtn.querySelector('.loading-spinner');
+    if (searchIcon) searchIcon.style.display = 'none';
+    if (loadingSpinner) loadingSpinner.style.display = 'inline';
+    gptSearchBtn.disabled = true;
+}
+
+function hideLoading() {
+    const searchIcon = gptSearchBtn.querySelector('.search-icon');
+    const loadingSpinner = gptSearchBtn.querySelector('.loading-spinner');
+    if (searchIcon) searchIcon.style.display = 'inline';
+    if (loadingSpinner) loadingSpinner.style.display = 'none';
+    gptSearchBtn.disabled = false;
+}
+
+function displayResult(content) {
+    gptResults.innerHTML = `
+        <div class="gpt-result-card">
+            <div class="gpt-result-header">
+                <span class="gpt-icon">🤖</span>
+                <h3>Réponse du Guide IA</h3>
+            </div>
+            <div class="gpt-result-content">
+                ${content.split('\n').map(paragraph => 
+                    paragraph.trim() ? `<p>${paragraph}</p>` : ''
+                ).join('')}
+            </div>
+        </div>
+    `;
+    gptResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function displayError(message) {
+    gptResults.innerHTML = `
+        <div class="gpt-error-card">
+            <span class="error-icon">⚠️</span>
+            <p>${message}</p>
+        </div>
+    `;
+}
+
+async function searchGPT(query) {
+    if (!query.trim()) {
+        displayError('Veuillez entrer une question.');
+        return;
+    }
+
+    showLoading();
+    gptResults.innerHTML = '';
+
+    try {
+        const response = await fetch(GPT_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: GPT_MODEL,
+                messages: [
+                    {
+                        role: 'user',
+                        content: query
+                    }
+                ]
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error?.message || `Erreur HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const content = data.choices[0]?.message?.content || 'Aucune réponse reçue.';
+        displayResult(content);
+    } catch (error) {
+        console.error('Erreur GPT:', error);
+        displayError(`Erreur: ${error.message}. Veuillez réessayer.`);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Event listeners for GPT search
+if (gptSearchBtn && gptSearchInput) {
+    gptSearchBtn.addEventListener('click', () => {
+        const query = gptSearchInput.value.trim();
+        searchGPT(query);
+    });
+
+    gptSearchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const query = gptSearchInput.value.trim();
+            searchGPT(query);
+        }
+    });
+}
+
