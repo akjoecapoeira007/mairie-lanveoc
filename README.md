@@ -1,31 +1,74 @@
-# Mairie Lanvéoc
+# Office du Tourisme de Lanvéoc
 
-Website for Mairie Lanvéoc
+Site web moderne pour l'Office du Tourisme de la Mairie de Lanvéoc.
 
-## Deployment
+## 🚀 Déploiement
 
-This repository is configured to automatically deploy to o2switch via FTP using git-ftp when changes are pushed to the main/master branch.
+Ce dépôt est configuré pour déployer automatiquement sur o2switch via FTP en utilisant git-ftp lorsque des changements sont poussés sur la branche main/master.
 
-### Setup
+### Configuration GitHub Actions
 
-The deployment uses GitHub Actions and requires the following secrets to be configured in the repository:
+Le déploiement utilise GitHub Actions et nécessite les secrets suivants dans le dépôt :
 
-- `FTP_USERNAME` - FTP username
-- `FTP_HOST` - FTP host address
-- `FTP_PORT` - FTP port (usually 21)
-- `FTP_PASSWORD` - FTP password
+1. Allez sur : https://github.com/akjoecapoeira007/mairie-lanveoc/settings/secrets/actions
+2. Ajoutez les secrets suivants :
+   - `FTP_USERNAME` - Nom d'utilisateur FTP
+   - `FTP_HOST` - Adresse du serveur FTP
+   - `FTP_PORT` - Port FTP (généralement 21)
+   - `FTP_PASSWORD` - Mot de passe FTP
 
-### Local Development
+Une fois les secrets configurés, chaque push sur `main` déclenchera automatiquement le déploiement.
 
-To deploy manually using git-ftp:
+### Déploiement Local
+
+Pour déployer manuellement avec git-ftp :
+
+**Option 1 : Utiliser le script de déploiement**
 
 ```bash
-# Set environment variables
-export FTP_USERNAME="your-username"
-export FTP_HOST="your-host"
-export FTP_PASSWORD="your-password"
+# Définir les variables d'environnement
+export FTP_USERNAME="votre-username"
+export FTP_HOST="votre-host"
+export FTP_PASSWORD="votre-password"
 
-# Deploy
+# Exécuter le script
+./deploy.sh
+```
+
+**Option 2 : Déploiement manuel**
+
+```bash
+# Définir les variables d'environnement
+export FTP_USERNAME="votre-username"
+export FTP_HOST="votre-host"
+export FTP_PASSWORD="votre-password"
+
+# Configurer git-ftp
+git config git-ftp.user "$FTP_USERNAME"
+git config git-ftp.url "$FTP_HOST"
+git config git-ftp.password "$FTP_PASSWORD"
+git config git-ftp.remote-root "public_html/mairie-lanveoc"
+
+# Premier déploiement (init)
+git ftp init
+
+# Déploiements suivants
 git ftp push
 ```
+
+## 📁 Structure du Projet
+
+- `index.html` - Page principale du site
+- `styles.css` - Feuille de style CSS
+- `script.js` - JavaScript pour l'interactivité
+- `.github/workflows/deploy.yml` - Workflow GitHub Actions pour le déploiement automatique
+
+## 🎨 Caractéristiques
+
+- Design moderne et responsive
+- Navigation fluide avec menu mobile
+- Sections : Accueil, Découvrir, Activités, Contact
+- Formulaire de contact
+- Animations et transitions
+- Optimisé pour tous les appareils
 
