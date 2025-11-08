@@ -34,7 +34,36 @@ if (empty($query)) {
 // Utiliser plusieurs sources d'images avec fallback
 $searchQuery = urlencode($query . ' France');
 
-// Liste de sources d'images à essayer (dans l'ordre)
+// Option: Utiliser Pexels API (gratuite, nécessite une clé API)
+// Pour activer, ajoutez PEXELS_API_KEY dans config.php
+$pexelsApiKey = ''; // Vous pouvez ajouter votre clé Pexels ici
+if (!empty($pexelsApiKey)) {
+    $pexelsUrl = 'https://api.pexels.com/v1/search?query=' . $searchQuery . '&per_page=1&orientation=landscape';
+    $ch = curl_init($pexelsUrl);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => ['Authorization: ' . $pexelsApiKey],
+        CURLOPT_TIMEOUT => 5
+    ]);
+    $pexelsResponse = curl_exec($ch);
+    $pexelsHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($pexelsHttpCode === 200) {
+        $pexelsData = json_decode($pexelsResponse, true);
+        if (isset($pexelsData['photos'][0]['src']['medium'])) {
+            echo json_encode([
+                'success' => true,
+                'imageUrl' => $pexelsData['photos'][0]['src']['medium'],
+                'query' => $query,
+                'source' => 'pexels'
+            ]);
+            exit;
+        }
+    }
+}
+
+// Liste de sources d'images à essayer (dans l'ordre) - fallback si pas d'API
 $imageSources = [
     // Source 1: Unsplash Source (peut ne pas fonctionner mais on essaie)
     'https://source.unsplash.com/400x300/?' . $searchQuery,
