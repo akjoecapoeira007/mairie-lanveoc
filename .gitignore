@@ -24,3 +24,6 @@ npm-debug.log*
 # API Keys
 config.js
 
+# PHP config (si vous voulez protéger la clé API)
+api/config.php
+

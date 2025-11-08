@@ -202,6 +202,48 @@ async function searchGPT(query) {
         return;
     }
 
+    showLoading();
+    gptResults.innerHTML = '';
+
+    try {
+        // Utiliser l'endpoint PHP backend
+        const response = await fetch('api/gpt.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: query
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `Erreur HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.success && data.content) {
+            displayResult(data.content);
+        } else {
+            throw new Error(data.error || 'Aucune réponse reçue.');
+        }
+    } catch (error) {
+        console.error('Erreur GPT:', error);
+        displayError(`Erreur: ${error.message}. Veuillez réessayer.`);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Ancienne fonction avec API directe (désactivée, utilisée via backend PHP maintenant)
+async function searchGPT_old(query) {
+    if (!query.trim()) {
+        displayError('Veuillez entrer une question.');
+        return;
+    }
+
     if (!OPENAI_API_KEY) {
         displayError('Clé API non configurée. Veuillez configurer config.js');
         return;
