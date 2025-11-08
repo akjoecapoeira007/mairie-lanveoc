@@ -70,7 +70,8 @@ $requestData = [
             'content' => $userMessage . "\n\nIMPORTANT: Réponds de manière courte et structurée. Utilise des listes à puces pour faciliter la comparaison. Mentionne clairement les noms des lieux pour permettre la recherche d'images."
         ]
     ],
-    'max_completion_tokens' => 500, // Limiter la longueur de la réponse (GPT-5 utilise max_completion_tokens)
+    // Utiliser max_completion_tokens pour GPT-5, max_tokens pour les autres modèles
+    ($GPT_MODEL === 'gpt-5' ? 'max_completion_tokens' : 'max_tokens') => 500, // Limiter la longueur de la réponse
     'temperature' => 0.7 // Équilibrer créativité et concision
 ];
 
