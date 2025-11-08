@@ -523,6 +523,24 @@ section {
     opacity: 0.5;
 }
 
+.image-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-light);
+    font-size: 1.2rem;
+}
+
+.image-fallback small {
+    font-size: 0.7rem;
+    margin-top: 0.5rem;
+    text-align: center;
+    padding: 0 0.5rem;
+    word-break: break-word;
+}
+
 .image-caption {
     font-size: 0.85rem;
     color: var(--text-light);
@@ -548,6 +566,28 @@ section {
 .gpt-result-content .comparison-item p {
     margin: 0.25rem 0;
     font-size: 0.95rem;
+}
+
+/* Styles pour les informations importantes (adresse, horaires, téléphone) */
+.info-line {
+    background: var(--bg-light);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin: 0.75rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    border-left: 3px solid var(--secondary-color);
+}
+
+.info-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.info-line strong {
+    color: var(--primary-color);
+    margin-right: 0.5rem;
 }
 
 .gpt-error-card {

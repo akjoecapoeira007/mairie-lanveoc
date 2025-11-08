@@ -67,17 +67,18 @@ $requestData = [
         ],
         [
             'role' => 'user',
-            'content' => $userMessage . "\n\nIMPORTANT: Réponds de manière courte et structurée. Utilise des listes à puces pour faciliter la comparaison. Mentionne clairement les noms des lieux pour permettre la recherche d'images."
+            'content' => $userMessage . "\n\nIMPORTANT: Réponds de manière complète et structurée. INCLUS les adresses complètes, horaires d'ouverture, et numéros de téléphone quand disponibles. Utilise des listes à puces pour faciliter la comparaison. Mentionne clairement les noms des lieux pour permettre la recherche d'images."
         ]
     ],
     'temperature' => 0.7 // Équilibrer créativité et concision
 ];
 
 // Utiliser max_completion_tokens pour GPT-5, max_tokens pour les autres modèles
+// Augmenté à 1000 tokens pour permettre des réponses complètes avec adresses et horaires
 if ($GPT_MODEL === 'gpt-5') {
-    $requestData['max_completion_tokens'] = 500;
+    $requestData['max_completion_tokens'] = 1000;
 } else {
-    $requestData['max_tokens'] = 500;
+    $requestData['max_tokens'] = 1000;
 }
 
 // Initialiser cURL
