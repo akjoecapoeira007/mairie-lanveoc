@@ -287,56 +287,53 @@ function displayResult(content) {
     gptResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// Fonction pour charger les images des lieux
+// Fonction pour charger les images des lieux via l'API backend
 async function loadImagesForPlaces(placeNames) {
-    placeNames.forEach(async (placeName) => {
+    for (const placeName of placeNames) {
         const imageItem = gptResults.querySelector(`[data-place="${placeName}"]`);
-        if (!imageItem) return;
+        if (!imageItem) continue;
         
         const placeholder = imageItem.querySelector('.image-placeholder');
-        if (!placeholder) return;
+        if (!placeholder) continue;
         
-        // Utiliser plusieurs sources d'images pour meilleure disponibilité
         try {
-            const searchQuery = encodeURIComponent(placeName + ' France');
+            // Appeler l'endpoint PHP backend pour obtenir l'URL de l'image
+            const response = await fetch(`api/images.php?q=${encodeURIComponent(placeName)}`);
             
-            // Essayer plusieurs sources d'images
-            const imageSources = [
-                // Source 1: Unsplash avec recherche directe (gratuit, sans clé)
-                `https://source.unsplash.com/400x300/?${searchQuery}`,
-                // Source 2: Image générique de paysage français
-                `https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop&q=80`,
-                // Source 3: Image générique de la Bretagne (si c'est dans la région)
-                `https://images.unsplash.com/photo-1531538517172-0e981df47f01?w=400&h=300&fit=crop&q=80`
-            ];
-            
-            let currentSourceIndex = 0;
-            
-            const tryLoadImage = (sourceIndex) => {
-                if (sourceIndex >= imageSources.length) {
-                    // Toutes les sources ont échoué, utiliser le fallback
-                    placeholder.innerHTML = '<div class="image-fallback">📷<br><small>' + placeName.substring(0, 20) + '</small></div>';
-                    return;
-                }
+            if (response.ok) {
+                const data = await response.json();
                 
-                const img = new Image();
-                img.onload = () => {
-                    placeholder.innerHTML = `<img src="${imageSources[sourceIndex]}" alt="${placeName}" loading="lazy">`;
-                };
-                img.onerror = () => {
-                    // Essayer la source suivante
-                    tryLoadImage(sourceIndex + 1);
-                };
-                img.src = imageSources[sourceIndex];
-            };
-            
-            // Commencer à charger la première image
-            tryLoadImage(0);
+                if (data.success && data.imageUrl) {
+                    // Charger l'image
+                    const img = new Image();
+                    img.onload = () => {
+                        placeholder.innerHTML = `<img src="${data.imageUrl}" alt="${placeName}" loading="lazy">`;
+                    };
+                    img.onerror = () => {
+                        // Si l'image ne charge pas, utiliser le fallback
+                        placeholder.innerHTML = '<div class="image-fallback">📷<br><small>' + placeName.substring(0, 20) + '</small></div>';
+                    };
+                    img.src = data.imageUrl;
+                } else {
+                    throw new Error('No image URL returned');
+                }
+            } else {
+                throw new Error('API request failed');
+            }
         } catch (error) {
-            console.log('Image load error:', error);
-            placeholder.innerHTML = '<div class="image-fallback">📷<br><small>' + placeName.substring(0, 20) + '</small></div>';
+            console.log('Image load error for', placeName, ':', error);
+            // Utiliser une image générique de paysage français en fallback
+            const fallbackUrl = 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop&q=80';
+            const img = new Image();
+            img.onload = () => {
+                placeholder.innerHTML = `<img src="${fallbackUrl}" alt="${placeName}" loading="lazy">`;
+            };
+            img.onerror = () => {
+                placeholder.innerHTML = '<div class="image-fallback">📷<br><small>' + placeName.substring(0, 20) + '</small></div>';
+            };
+            img.src = fallbackUrl;
         }
-    });
+    }
 }
 
 function displayError(message) {
