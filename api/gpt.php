@@ -67,9 +67,11 @@ $requestData = [
         ],
         [
             'role' => 'user',
-            'content' => $userMessage
+            'content' => $userMessage . "\n\nIMPORTANT: Réponds de manière courte et structurée. Utilise des listes à puces pour faciliter la comparaison. Mentionne clairement les noms des lieux pour permettre la recherche d'images."
         ]
-    ]
+    ],
+    'max_tokens' => 500, // Limiter la longueur de la réponse
+    'temperature' => 0.7 // Équilibrer créativité et concision
 ];
 
 // Initialiser cURL

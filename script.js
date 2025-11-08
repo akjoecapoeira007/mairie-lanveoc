@@ -170,20 +170,112 @@ function hideLoading() {
     gptSearchBtn.disabled = false;
 }
 
+// Fonction pour extraire les noms de lieux depuis le texte
+function extractPlaceNames(text) {
+    const placePatterns = [
+        /\*\*([^*]+)\*\*/g, // Markdown bold
+        /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*\(/gm, // Nom (Ville)
+        /(?:restaurant|hôtel|plage|monument|château|musée|parc)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/gi
+    ];
+    
+    const places = new Set();
+    placePatterns.forEach(pattern => {
+        const matches = text.matchAll(pattern);
+        for (const match of matches) {
+            const name = match[1]?.trim();
+            if (name && name.length > 2 && name.length < 50) {
+                places.add(name);
+            }
+        }
+    });
+    
+    return Array.from(places).slice(0, 5); // Max 5 images
+}
+
+// Fonction pour chercher une image via Unsplash
+async function getImageForPlace(placeName) {
+    try {
+        const response = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(placeName + ' France')}&per_page=1&client_id=YOUR_UNSPLASH_KEY`);
+        if (response.ok) {
+            const data = await response.json();
+            return data.results?.[0]?.urls?.small || null;
+        }
+    } catch (error) {
+        console.log('Image search failed:', error);
+    }
+    return null;
+}
+
+// Fonction pour formater le contenu avec support markdown basique
+function formatContent(content) {
+    // Convertir markdown bold en HTML
+    content = content.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    
+    // Détecter les listes
+    content = content.replace(/^[-•]\s+(.+)$/gm, '<li>$1</li>');
+    
+    // Wrapper les listes
+    content = content.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+    
+    // Détecter les sections (titres)
+    content = content.replace(/^([A-Z][^:]+):$/gm, '<h4 class="result-section-title">$1</h4>');
+    
+    // Diviser en paragraphes
+    const paragraphs = content.split(/\n\n+/);
+    
+    return paragraphs.map(p => {
+        p = p.trim();
+        if (!p) return '';
+        
+        // Si c'est déjà du HTML (liste, titre), retourner tel quel
+        if (p.startsWith('<')) {
+            return p;
+        }
+        
+        // Sinon, c'est un paragraphe normal
+        return `<p>${p}</p>`;
+    }).join('');
+}
+
 function displayResult(content) {
+    // Extraire les noms de lieux pour les images
+    const placeNames = extractPlaceNames(content);
+    
+    // Formater le contenu
+    const formattedContent = formatContent(content);
+    
+    // Créer les placeholders d'images
+    let imagesHTML = '';
+    if (placeNames.length > 0) {
+        imagesHTML = `
+            <div class="gpt-result-images">
+                ${placeNames.map(name => `
+                    <div class="result-image-item" data-place="${name}">
+                        <div class="image-placeholder">
+                            <span class="image-loading">📷</span>
+                        </div>
+                        <p class="image-caption">${name}</p>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+    
     gptResults.innerHTML = `
         <div class="gpt-result-card">
             <div class="gpt-result-header">
                 <span class="gpt-icon">🤖</span>
                 <h3>Réponse du Guide IA</h3>
             </div>
+            ${imagesHTML}
             <div class="gpt-result-content">
-                ${content.split('\n').map(paragraph => 
-                    paragraph.trim() ? `<p>${paragraph}</p>` : ''
-                ).join('')}
+                ${formattedContent}
             </div>
         </div>
     `;
+    
+    // Charger les images de manière asynchrone (sans Unsplash pour l'instant, juste placeholder)
+    // Vous pouvez ajouter Unsplash API plus tard si nécessaire
     gptResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
