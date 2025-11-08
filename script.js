@@ -189,7 +189,7 @@ function extractPlaceNames(text) {
         }
     });
     
-    return Array.from(places).slice(0, 5); // Max 5 images
+    return Array.from(places).slice(0, 3); // Max 3 images
 }
 
 // Fonction pour chercher une image via Unsplash
@@ -206,15 +206,40 @@ async function getImageForPlace(placeName) {
     return null;
 }
 
+// Fonction pour nettoyer et formater un numéro de téléphone
+function formatPhoneNumber(phone) {
+    // Enlever tous les caractères non numériques sauf + au début
+    return phone.replace(/[^\d+]/g, '').trim();
+}
+
+// Fonction pour créer un lien de navigation
+function createMapsLink(address) {
+    const encodedAddress = encodeURIComponent(address);
+    return `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+}
+
 // Fonction pour formater le contenu avec support markdown basique
 function formatContent(content) {
     // Convertir markdown bold en HTML
     content = content.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
     
     // Détecter les emojis avec informations (adresse, horaires, téléphone)
-    content = content.replace(/📍\s*Adresse:\s*(.+)/gi, '<div class="info-line"><span class="info-icon">📍</span><strong>Adresse:</strong> $1</div>');
+    // Adresse - rendre cliquable pour ouvrir l'app de navigation
+    content = content.replace(/📍\s*Adresse:\s*(.+)/gi, (match, address) => {
+        const cleanAddress = address.trim();
+        const mapsLink = createMapsLink(cleanAddress);
+        return `<div class="info-line"><span class="info-icon">📍</span><strong>Adresse:</strong> <a href="${mapsLink}" target="_blank" class="clickable-address" onclick="window.open('${mapsLink}', '_blank'); return false;">${cleanAddress}</a></div>`;
+    });
+    
+    // Horaires - pas de lien
     content = content.replace(/🕒\s*Horaires:\s*(.+)/gi, '<div class="info-line"><span class="info-icon">🕒</span><strong>Horaires:</strong> $1</div>');
-    content = content.replace(/📞\s*Téléphone:\s*(.+)/gi, '<div class="info-line"><span class="info-icon">📞</span><strong>Téléphone:</strong> $1</div>');
+    
+    // Téléphone - rendre cliquable pour appeler directement
+    content = content.replace(/📞\s*Téléphone:\s*(.+)/gi, (match, phone) => {
+        const cleanPhone = formatPhoneNumber(phone);
+        const telLink = `tel:${cleanPhone}`;
+        return `<div class="info-line"><span class="info-icon">📞</span><strong>Téléphone:</strong> <a href="${telLink}" class="clickable-phone">${phone.trim()}</a></div>`;
+    });
     
     // Détecter les listes
     content = content.replace(/^[-•]\s+(.+)$/gm, '<li>$1</li>');

@@ -590,6 +590,36 @@ section {
     margin-right: 0.5rem;
 }
 
+/* Liens cliquables pour adresse et téléphone */
+.clickable-address,
+.clickable-phone {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dotted var(--secondary-color);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.clickable-address:hover,
+.clickable-phone:hover {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.clickable-phone {
+    /* Style spécial pour le téléphone - indique qu'on peut appeler */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.clickable-phone::after {
+    content: "📞";
+    font-size: 0.9em;
+    opacity: 0.7;
+}
+
 .gpt-error-card {
     background: #fff3cd;
     border: 2px solid #ffc107;
