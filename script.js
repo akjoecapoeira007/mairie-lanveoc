@@ -135,13 +135,17 @@ document.head.appendChild(style);
 // GPT Search functionality
 // API configuration is loaded from config.js (not in git)
 let OPENAI_API_KEY = '';
-let GPT_MODEL = 'gpt-5-custom-id-de-guide-france';
+let GPT_MODEL = 'gpt-4-turbo-preview'; // Fallback to standard model
+let USE_ASSISTANT_API = false;
+let ASSISTANT_ID = '';
 let GPT_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 // Load config if available
 if (typeof GPT_CONFIG !== 'undefined') {
     OPENAI_API_KEY = GPT_CONFIG.OPENAI_API_KEY || '';
     GPT_MODEL = GPT_CONFIG.GPT_MODEL || GPT_MODEL;
+    USE_ASSISTANT_API = GPT_CONFIG.USE_ASSISTANT_API || false;
+    ASSISTANT_ID = GPT_CONFIG.ASSISTANT_ID || '';
 }
 
 const gptSearchInput = document.getElementById('gptSearchInput');
@@ -196,35 +200,117 @@ async function searchGPT(query) {
         return;
     }
 
+    if (!OPENAI_API_KEY) {
+        displayError('Clé API non configurée. Veuillez configurer config.js');
+        return;
+    }
+
     showLoading();
     gptResults.innerHTML = '';
 
     try {
-        const response = await fetch(GPT_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${OPENAI_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: GPT_MODEL,
-                messages: [
-                    {
-                        role: 'user',
-                        content: query
+        let response;
+        
+        if (USE_ASSISTANT_API && ASSISTANT_ID) {
+            // Utiliser l'API Assistants (pour GPTs personnalisés)
+            // Créer un thread et envoyer un message
+            const threadResponse = await fetch('https://api.openai.com/v1/threads', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                    'OpenAI-Beta': 'assistants=v2'
+                }
+            });
+            
+            const threadData = await threadResponse.json();
+            const threadId = threadData.id;
+            
+            // Ajouter un message au thread
+            await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                    'OpenAI-Beta': 'assistants=v2'
+                },
+                body: JSON.stringify({
+                    role: 'user',
+                    content: query
+                })
+            });
+            
+            // Lancer l'assistant
+            const runResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                    'OpenAI-Beta': 'assistants=v2'
+                },
+                body: JSON.stringify({
+                    assistant_id: ASSISTANT_ID
+                })
+            });
+            
+            const runData = await runResponse.json();
+            let runId = runData.id;
+            let runStatus = runData.status;
+            
+            // Attendre que le run soit terminé
+            while (runStatus === 'queued' || runStatus === 'in_progress') {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                const statusResponse = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                        'OpenAI-Beta': 'assistants=v2'
                     }
-                ]
-            })
-        });
+                });
+                const statusData = await statusResponse.json();
+                runStatus = statusData.status;
+            }
+            
+            // Récupérer les messages
+            response = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
+                headers: {
+                    'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                    'OpenAI-Beta': 'assistants=v2'
+                }
+            });
+            
+            const messagesData = await response.json();
+            const assistantMessage = messagesData.data.find(msg => msg.role === 'assistant');
+            const content = assistantMessage?.content[0]?.text?.value || 'Aucune réponse reçue.';
+            displayResult(content);
+            return;
+        } else {
+            // Utiliser l'API Chat Completions standard
+            response = await fetch(GPT_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENAI_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: GPT_MODEL,
+                    messages: [
+                        {
+                            role: 'user',
+                            content: query
+                        }
+                    ]
+                })
+            });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error?.message || `Erreur HTTP: ${response.status}`);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error?.message || `Erreur HTTP: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const content = data.choices[0]?.message?.content || 'Aucune réponse reçue.';
+            displayResult(content);
         }
-
-        const data = await response.json();
-        const content = data.choices[0]?.message?.content || 'Aucune réponse reçue.';
-        displayResult(content);
     } catch (error) {
         console.error('Erreur GPT:', error);
         displayError(`Erreur: ${error.message}. Veuillez réessayer.`);
