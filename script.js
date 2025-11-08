@@ -298,35 +298,43 @@ async function loadImagesForPlaces(placeNames) {
         
         // Utiliser plusieurs sources d'images pour meilleure disponibilité
         try {
-            // Essayer d'abord avec une recherche Google Images via proxy (gratuit)
-            // Alternative: utiliser un service d'images
             const searchQuery = encodeURIComponent(placeName + ' France');
             
-            // Utiliser un service d'images gratuit - Pexels via API publique
-            // Ou utiliser un placeholder avec une image générique de paysage français
-            const imageUrl = `https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop&q=80`;
+            // Essayer plusieurs sources d'images
+            const imageSources = [
+                // Source 1: Unsplash avec recherche directe (gratuit, sans clé)
+                `https://source.unsplash.com/400x300/?${searchQuery}`,
+                // Source 2: Image générique de paysage français
+                `https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop&q=80`,
+                // Source 3: Image générique de la Bretagne (si c'est dans la région)
+                `https://images.unsplash.com/photo-1531538517172-0e981df47f01?w=400&h=300&fit=crop&q=80`
+            ];
             
-            // Essayer de charger une image spécifique via un proxy d'images
-            // Pour l'instant, utiliser une image générique de la France
-            const img = new Image();
-            img.onload = () => {
-                placeholder.innerHTML = `<img src="${imageUrl}" alt="${placeName}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'image-loading\\'>📷</span>'">`;
-            };
-            img.onerror = () => {
-                // Si l'image ne charge pas, utiliser un placeholder avec emoji
-                placeholder.innerHTML = '<div class="image-fallback">📷<br><small>' + placeName.substring(0, 15) + '</small></div>';
-            };
-            img.src = imageUrl;
+            let currentSourceIndex = 0;
             
-            // Essayer aussi de charger une image plus spécifique en arrière-plan
-            setTimeout(() => {
-                const specificImageUrl = `https://api.pexels.com/v1/search?query=${searchQuery}&per_page=1`;
-                // Note: Pexels nécessite une clé API, mais on peut utiliser leur CDN direct
-                // Pour l'instant, on garde l'image générique
-            }, 100);
+            const tryLoadImage = (sourceIndex) => {
+                if (sourceIndex >= imageSources.length) {
+                    // Toutes les sources ont échoué, utiliser le fallback
+                    placeholder.innerHTML = '<div class="image-fallback">📷<br><small>' + placeName.substring(0, 20) + '</small></div>';
+                    return;
+                }
+                
+                const img = new Image();
+                img.onload = () => {
+                    placeholder.innerHTML = `<img src="${imageSources[sourceIndex]}" alt="${placeName}" loading="lazy">`;
+                };
+                img.onerror = () => {
+                    // Essayer la source suivante
+                    tryLoadImage(sourceIndex + 1);
+                };
+                img.src = imageSources[sourceIndex];
+            };
+            
+            // Commencer à charger la première image
+            tryLoadImage(0);
         } catch (error) {
             console.log('Image load error:', error);
-            placeholder.innerHTML = '<div class="image-fallback">📷<br><small>' + placeName.substring(0, 15) + '</small></div>';
+            placeholder.innerHTML = '<div class="image-fallback">📷<br><small>' + placeName.substring(0, 20) + '</small></div>';
         }
     });
 }
