@@ -36,11 +36,13 @@ if (empty($query)) {
 $configFile = __DIR__ . '/config.php';
 $googleApiKey = '';
 $googleCseId = '';
+$pexelsApiKey = '';
 
 if (file_exists($configFile)) {
     $config = require $configFile;
     $googleApiKey = $config['GOOGLE_API_KEY'] ?? '';
     $googleCseId = $config['GOOGLE_CSE_ID'] ?? '';
+    $pexelsApiKey = $config['PEXELS_API_KEY'] ?? '';
 }
 
 $searchQuery = urlencode($query . ' France');
@@ -93,8 +95,7 @@ if (!empty($googleApiKey) && !empty($googleCseId)) {
 }
 
 // Option: Utiliser Pexels API (gratuite, nécessite une clé API)
-// Pour activer, ajoutez PEXELS_API_KEY dans config.php
-$pexelsApiKey = $config['PEXELS_API_KEY'] ?? '';
+// La clé est chargée depuis config.php ci-dessus
 if (!empty($pexelsApiKey)) {
     $pexelsUrl = 'https://api.pexels.com/v1/search?query=' . $searchQuery . '&per_page=1&orientation=landscape';
     $ch = curl_init($pexelsUrl);
