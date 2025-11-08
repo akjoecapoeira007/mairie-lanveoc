@@ -274,9 +274,43 @@ function displayResult(content) {
         </div>
     `;
     
-    // Charger les images de manière asynchrone (sans Unsplash pour l'instant, juste placeholder)
-    // Vous pouvez ajouter Unsplash API plus tard si nécessaire
+    // Charger les images de manière asynchrone
+    if (placeNames.length > 0) {
+        loadImagesForPlaces(placeNames);
+    }
+    
     gptResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Fonction pour charger les images des lieux
+async function loadImagesForPlaces(placeNames) {
+    placeNames.forEach(async (placeName) => {
+        const imageItem = gptResults.querySelector(`[data-place="${placeName}"]`);
+        if (!imageItem) return;
+        
+        const placeholder = imageItem.querySelector('.image-placeholder');
+        if (!placeholder) return;
+        
+        // Utiliser un service d'images gratuit (Picsum avec recherche par mot-clé)
+        // Alternative: utiliser Unsplash API si vous avez une clé
+        try {
+            // Pour l'instant, utiliser un placeholder avec une image générique
+            // Vous pouvez remplacer par Unsplash API plus tard
+            const imageUrl = `https://source.unsplash.com/400x300/?${encodeURIComponent(placeName + ' France')}`;
+            
+            const img = new Image();
+            img.onload = () => {
+                placeholder.innerHTML = `<img src="${imageUrl}" alt="${placeName}" loading="lazy">`;
+            };
+            img.onerror = () => {
+                // Si l'image ne charge pas, garder le placeholder
+                placeholder.innerHTML = '<span class="image-loading">📷</span>';
+            };
+            img.src = imageUrl;
+        } catch (error) {
+            console.log('Image load error:', error);
+        }
+    });
 }
 
 function displayError(message) {
