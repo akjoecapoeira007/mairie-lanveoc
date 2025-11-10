@@ -291,21 +291,6 @@ function displayResult(content, systemPrompt = null) {
         `;
     }
     
-    // Afficher le prompt système utilisé (pour transparence)
-    let promptSection = '';
-    if (systemPrompt) {
-        promptSection = `
-            <div class="prompt-display">
-                <button class="prompt-toggle" onclick="this.nextElementSibling.classList.toggle('expanded')">
-                    <span>📋</span> Voir le prompt système utilisé
-                </button>
-                <div class="prompt-content">
-                    <pre>${systemPrompt.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
-                </div>
-            </div>
-        `;
-    }
-    
     gptResults.innerHTML = `
         <div class="gpt-result-card">
             <div class="gpt-result-header">
@@ -316,7 +301,6 @@ function displayResult(content, systemPrompt = null) {
             <div class="gpt-result-content">
                 ${formattedContent}
             </div>
-            ${promptSection}
         </div>
     `;
     
