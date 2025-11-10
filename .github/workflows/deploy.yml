@@ -65,11 +65,10 @@ jobs:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
           git config git-ftp.user "$FTP_USERNAME"
-          git config git-ftp.url "ftp://$FTP_HOST"
+          if [ -n "$FTP_PORT" ]; then HOST_WITH_PORT="$FTP_HOST:$FTP_PORT"; else HOST_WITH_PORT="$FTP_HOST"; fi
+          git config git-ftp.url "ftp://$HOST_WITH_PORT"
           git config git-ftp.password "$FTP_PASSWORD"
           git config git-ftp.remote-root "/"
           # Remove old log to avoid SHA1 issues in CI environment
-          rm -f .git-ftp.log
-          # Always use init with auto-confirm (yes) for reliable deployment
-          yes | git ftp init --syncroot .
+          git ftp push --auto-init --force --syncroot .
 
