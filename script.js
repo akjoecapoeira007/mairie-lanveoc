@@ -267,7 +267,7 @@ function formatContent(content) {
     }).join('');
 }
 
-function displayResult(content) {
+function displayResult(content, systemPrompt = null) {
     // Extraire les noms de lieux pour les images
     const placeNames = extractPlaceNames(content);
     
@@ -291,6 +291,21 @@ function displayResult(content) {
         `;
     }
     
+    // Afficher le prompt système utilisé (pour transparence)
+    let promptSection = '';
+    if (systemPrompt) {
+        promptSection = `
+            <div class="prompt-display">
+                <button class="prompt-toggle" onclick="this.nextElementSibling.classList.toggle('expanded')">
+                    <span>📋</span> Voir le prompt système utilisé
+                </button>
+                <div class="prompt-content">
+                    <pre>${systemPrompt.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+                </div>
+            </div>
+        `;
+    }
+    
     gptResults.innerHTML = `
         <div class="gpt-result-card">
             <div class="gpt-result-header">
@@ -301,6 +316,7 @@ function displayResult(content) {
             <div class="gpt-result-content">
                 ${formattedContent}
             </div>
+            ${promptSection}
         </div>
     `;
     
@@ -399,7 +415,8 @@ async function searchGPT(query) {
         const data = await response.json();
         
         if (data.success && data.content) {
-            displayResult(data.content);
+            // Afficher le résultat avec le prompt utilisé
+            displayResult(data.content, data.systemPrompt);
         } else {
             throw new Error(data.error || 'Aucune réponse reçue.');
         }

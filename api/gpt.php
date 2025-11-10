@@ -127,11 +127,12 @@ if ($httpCode !== 200) {
 // Extraire le contenu de la réponse
 $content = $responseData['choices'][0]['message']['content'] ?? 'Aucune réponse reçue.';
 
-// Retourner la réponse
+// Retourner la réponse avec le prompt utilisé (pour transparence)
 echo json_encode([
     'success' => true,
     'content' => $content,
     'model' => $responseData['model'] ?? $GPT_MODEL,
-    'usage' => $responseData['usage'] ?? null
+    'usage' => $responseData['usage'] ?? null,
+    'systemPrompt' => $SYSTEM_MESSAGE // Inclure le prompt système utilisé
 ]);
 

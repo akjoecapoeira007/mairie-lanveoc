@@ -620,6 +620,64 @@ section {
     opacity: 0.7;
 }
 
+/* Affichage du prompt système */
+.prompt-display {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--bg-light);
+}
+
+.prompt-toggle {
+    background: var(--bg-light);
+    border: 2px solid var(--secondary-color);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+
+.prompt-toggle:hover {
+    background: var(--secondary-color);
+    color: var(--white);
+}
+
+.prompt-toggle span {
+    font-size: 1.2rem;
+}
+
+.prompt-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    margin-top: 1rem;
+}
+
+.prompt-content.expanded {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.prompt-content pre {
+    background: var(--bg-light);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--secondary-color);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-dark);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+}
+
 .gpt-error-card {
     background: #fff3cd;
     border: 2px solid #ffc107;
