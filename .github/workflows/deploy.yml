@@ -19,6 +19,44 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git-ftp
       
+      - name: Create config.php from secrets
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          GPT_MODEL: ${{ secrets.GPT_MODEL }}
+          SYSTEM_MESSAGE: ${{ secrets.SYSTEM_MESSAGE }}
+        run: |
+          # Créer config.php avec PHP pour gérer correctement les chaînes multilignes
+          php -r "
+          \$config = [
+              'OPENAI_API_KEY' => getenv('OPENAI_API_KEY') ?: '',
+              'GOOGLE_API_KEY' => getenv('GOOGLE_API_KEY') ?: '',
+              'GOOGLE_CSE_ID' => getenv('GOOGLE_CSE_ID') ?: '',
+              'PEXELS_API_KEY' => getenv('PEXELS_API_KEY') ?: '',
+              'GPT_MODEL' => getenv('GPT_MODEL') ?: 'gpt-4o-mini',
+              'SYSTEM_MESSAGE' => getenv('SYSTEM_MESSAGE') ?: 'Tu es Guide France, un conseiller touristique virtuel pour toutes les régions de France. Tu aides les utilisateurs à découvrir les spécialités locales, les activités, et les meilleurs endroits où manger, dormir, ou visiter.',
+              'OPENAI_API_URL' => 'https://api.openai.com/v1/chat/completions'
+          ];
+          
+          \$output = \"<?php\\n\";
+          \$output .= \"/**\\n\";
+          \$output .= \" * Fichier de configuration pour l'API GPT\\n\";
+          \$output .= \" * Généré automatiquement depuis les secrets GitHub lors du déploiement\\n\";
+          \$output .= \" */\\n\\n\";
+          \$output .= \"return [\\n\";
+          
+          foreach (\$config as \$key => \$value) {
+              \$output .= \"    '\" . \$key . \"' => \" . var_export(\$value, true) . \",\\n\";
+          }
+          
+          \$output .= \"];\\n\";
+          
+          file_put_contents('api/config.php', \$output);
+          echo \"✅ config.php généré avec succès\\n\";
+          "
+      
       - name: Deploy to FTP
         env:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
