@@ -68,6 +68,8 @@ jobs:
           git config git-ftp.url "ftp://$FTP_HOST"
           git config git-ftp.password "$FTP_PASSWORD"
           git config git-ftp.remote-root "/"
-          # Try to push, if it fails (first deployment), use init instead
-          git ftp push --syncroot . || git ftp init --syncroot .
+          # Remove old log to avoid SHA1 issues in CI environment
+          rm -f .git-ftp.log
+          # Always use init with auto-confirm (yes) for reliable deployment
+          yes | git ftp init --syncroot .
 
