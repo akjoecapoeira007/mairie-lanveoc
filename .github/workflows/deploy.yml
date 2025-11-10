@@ -14,10 +14,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Setup git-ftp
+      - name: Setup git-ftp and PHP
         run: |
           sudo apt-get update
-          sudo apt-get install -y git-ftp
+          sudo apt-get install -y git-ftp php-cli
       
       - name: Create config.php from secrets
         env:
